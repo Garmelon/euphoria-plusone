@@ -53,12 +53,11 @@ class YourBot(yaboli.Bot):
 		
 		self.db = db
 		
-		#self.help_general = None
-		
+		self.help_general = "/me counts :+1:s."
 		self.help_specific = (
-			"Counts +1s\n"
-			"!points - get your own points\n"
-			"!points <person1> [<person2> ...] - list points of other people\n\n"
+			"Counts +1/:+1:/:bronze:s: Simply reply to someone's message to award them a point.\n"
+			"!points - show your own points\n"
+			"!points <person1> [<person2> ...] - list other people's points\n\n"
 			"Github: https://github.com/Garmelon/plusone (complies with botrulez, including !kill and !restart)\n"
 			"Created by @Garmy using yaboli (https://github.com/Garmelon/yaboli)"
 		)
@@ -87,7 +86,10 @@ class YourBot(yaboli.Bot):
 	async def command_points(self, message, args):
 		if not args:
 			points = await self.db.points_of(message.sender.nick)
-			await self.room.send(f"You have {points} point{'s' if points != 1 else ''}.", message.message_id)
+			await self.room.send(
+				f"You have {points} point{'s' if points != 1 else ''}.",
+				message.message_id
+			)
 		else:
 			response = []
 			for arg in args:
