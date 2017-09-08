@@ -8,10 +8,13 @@ import sys
 class PointDB(yaboli.Database):
 	@yaboli.Database.operation
 	def initialize(conn):
-		print("INITIALIZING")
 		cur = conn.cursor()
-		cur.execute(("CREATE TABLE IF NOT EXISTS Points "
-		             "(nick TEXT, points INTEGER)"))
+		cur.execute((
+			"CREATE TABLE IF NOT EXISTS Points ("
+				"nick TEXT UNIQUE NOT NULL,"
+				"points INTEGER"
+			")"
+		))
 		conn.commit()
 	
 	@yaboli.Database.operation
@@ -19,14 +22,8 @@ class PointDB(yaboli.Database):
 		nick = mention_reduced(nick)
 		cur = conn.cursor()
 		
-		cur.execute("SELECT * FROM Points WHERE nick=?", (nick,))
-		if cur.fetchone():
-			print(f"@{nick}: already in db, updating...")
-			cur.execute("UPDATE Points SET points=points+1 WHERE nick=?", (nick,))
-		else:
-			print(f"@{nick}: not in db, adding...")
-			cur.execute("INSERT INTO Points (nick, points) VALUES (?, 1)", (nick,))
-		
+		cur.execute("INSERT OR IGNORE INTO Points (nick, points) VALUES (?, 0)", (nick,))
+		cur.execute("UPDATE Points SET points=points+1 WHERE nick=?", (nick,))
 		conn.commit()
 	
 	@yaboli.Database.operation
