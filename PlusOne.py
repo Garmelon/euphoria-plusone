@@ -73,19 +73,19 @@ class YourBot(yaboli.Bot):
 	async def detect_plusone(self, message):
 		if re.fullmatch(self.PLUSONE_RE, message.content):
 			if not message.parent:
-				await self.room.send("You can't +1 nothing...", message.message_id)
+				await self.room.send("You can't +1 nothing...", message.mid)
 			else:
 				parent_message = await self.room.get_message(message.parent)
 				sender = parent_message.sender.nick
 				await self.db.add_point(sender)
-				await self.room.send("Point registered.", message.message_id)
+				await self.room.send("Point registered.", message.mid)
 	
 	async def command_points(self, message, args):
 		if not args:
 			points = await self.db.points_of(message.sender.nick)
 			await self.room.send(
 				f"You have {points} point{'s' if points != 1 else ''}.",
-				message.message_id
+				message.mid
 			)
 		else:
 			response = []
@@ -96,7 +96,7 @@ class YourBot(yaboli.Bot):
 					response.append(f"@{mention(nick)} has {points} point{'' if points == 1 else 's'}.")
 				else:
 					response.append(f"{arg!r} is not a mention.")
-			await self.room.send("\n".join(response), message.message_id)
+			await self.room.send("\n".join(response), message.mid)
 
 def main():
 	if len(sys.argv) == 3:
