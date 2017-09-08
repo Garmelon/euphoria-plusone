@@ -43,7 +43,8 @@ class YourBot(yaboli.Bot):
 	Count +1s awarded to users by other users.
 	"""
 	
-	PLUSONE_RE = r"(\+1|:\+1:|:bronze:)"
+	PLUSONE_RE = r"(\+1|:\+1:|:bronze:)\s*(.*)"
+	MENTION_RE = r"((for|to)\s+)?@(\S+)"
 	
 	def __init__(self, db):
 		super().__init__("PlusOne")
@@ -60,27 +61,34 @@ class YourBot(yaboli.Bot):
 		)
 		self.ping_message = ":bronze!?:"
 		
-		self.register_callback("points", self.command_points, specific=False)
+		self.register_command("points", self.command_points, specific=False)
+		self.register_trigger(self.PLUSONE_RE, self.trigger_plusone)
 	
 	async def on_connected(self):
 		await super().on_connected()
 		await self.db.initialize()
 	
-	async def on_send(self, message):
-		await super().on_send(message) # This is where yaboli.bot reacts to commands
-		await self.detect_plusone(message)
+	async def trigger_plusone(self, message, match):
+		specific = re.match(self.MENTION_RE, match.group(2))
+		if specific:
+			nick = specific.group(3)
+			await self.db.add_point(nick)
+			await self.room.send(f"Point for @{mention(nick)} registered.", message.mid)
+		elif message.parent:
+			parent_message = await self.room.get_message(message.parent)
+			sender = parent_message.sender.nick
+			await self.db.add_point(sender)
+			await self.room.send("Point registered.", message.mid)
+		else:
+			await self.room.send("You can't +1 nothing...", message.mid)
 	
-	async def detect_plusone(self, message):
-		if re.fullmatch(self.PLUSONE_RE, message.content):
-			if not message.parent:
-				await self.room.send("You can't +1 nothing...", message.mid)
-			else:
-				parent_message = await self.room.get_message(message.parent)
-				sender = parent_message.sender.nick
-				await self.db.add_point(sender)
-				await self.room.send("Point registered.", message.mid)
+	async def trigger_plusone_mention(self, message, match):
+		nick = match.group(2)
+		await self.db.add_point(nick)
+		await self.room.send(f"Point for @{mention(nick)} registered.", message.mid)
 	
-	async def command_points(self, message, args):
+	async def command_points(self, message, argstr):
+		args = self.parse_args(argstr)
 		if not args:
 			points = await self.db.points_of(message.sender.nick)
 			await self.room.send(
