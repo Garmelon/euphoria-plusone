@@ -38,7 +38,7 @@ class PointDB(yaboli.Database):
 		else:
 			return 0
 
-class YourBot(yaboli.Bot):
+class PlusOne(yaboli.Bot):
 	"""
 	Count +1s awarded to users by other users.
 	"""
@@ -53,12 +53,14 @@ class YourBot(yaboli.Bot):
 		
 		self.help_general = "/me counts :+1:s."
 		self.help_specific = (
-			"Counts +1/:+1:/:bronze:s: Simply reply to someone's message to award them a point.\n"
+			"Counts +1/:+1:/:bronze:s: Simply reply \"+1\" to someone's message to award them a point.\n"
+			"Alternatively, specify a person with: \"+1 [to|for] @person\"\n"
 			"!points - show your own points\n"
 			"!points <person1> [<person2> ...] - list other people's points\n\n"
-			"Github: https://github.com/Garmelon/plusone (complies with botrulez, including !kill and !restart)\n"
-			"Created by @Garmy using yaboli (https://github.com/Garmelon/yaboli)"
+			"Created by @Garmy using yaboli.\n"
+			"For additional info, try \"!help @{nick} <topic>\". Topics:\n"
 		)
+		self.help_specific += self.list_help_topics()
 		self.ping_message = ":bronze!?:"
 		
 		self.register_command("points", self.command_points, specific=False)
@@ -109,7 +111,7 @@ class YourBot(yaboli.Bot):
 def main():
 	if len(sys.argv) == 3:
 		db = PointDB(sys.argv[2])
-		run_bot(YourBot, sys.argv[1], db)
+		run_bot(PlusOne, sys.argv[1], db)
 	else:
 		print("USAGE:")
 		print(f"  {sys.argv[0]} <room> <pointsdb>")
