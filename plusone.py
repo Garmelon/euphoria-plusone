@@ -1,5 +1,6 @@
 import yaboli
 from yaboli.utils import *
+import asyncio
 import re
 import sys
 
@@ -66,10 +67,6 @@ class PlusOne(yaboli.Bot):
 		self.register_command("points", self.command_points, specific=False)
 		self.register_trigger(self.PLUSONE_RE, self.trigger_plusone)
 	
-	async def on_connected(self):
-		await super().on_connected()
-		await self.db.initialize()
-	
 	async def trigger_plusone(self, message, match):
 		specific = re.match(self.MENTION_RE, match.group(2))
 		if specific:
@@ -111,6 +108,7 @@ class PlusOne(yaboli.Bot):
 def main():
 	if len(sys.argv) == 3:
 		db = PointDB(sys.argv[2])
+		asyncio.get_event_loop().run_until_complete(db.initialize())
 		run_bot(PlusOne, sys.argv[1], db)
 	else:
 		print("USAGE:")
