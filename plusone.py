@@ -44,7 +44,7 @@ class PlusOne(yaboli.Bot):
 	Count +1s awarded to users by other users.
 	"""
 	
-	PLUSONE_RE = r"(\+1|:\+1:|:bronze:)\s*(.*)"
+	PLUSONE_RE = r"(\+1|:\+1:|:bronze(!\?|\?!)?:)\s*(.*)"
 	MENTION_RE = r"((for|to)\s+)?@(\S+)"
 	
 	def __init__(self, db):
