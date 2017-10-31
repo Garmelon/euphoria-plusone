@@ -72,7 +72,7 @@ class PlusOne(yaboli.Bot):
 		if specific:
 			nick = specific.group(3)
 			if similar(nick, message.sender.nick):
-				await self.room.send("Don't +1 yourself, thats... nasty.", message.mid)
+				await self.room.send("Don't +1 yourself, that's... nasty.", message.mid)
 			else:
 				await self.db.add_point(nick)
 				await self.room.send(f"Point for @{mention(nick)} registered.", message.mid)
