@@ -68,23 +68,24 @@ class PlusOne(yaboli.Bot):
 		self.register_trigger(self.PLUSONE_RE, self.trigger_plusone)
 	
 	async def trigger_plusone(self, message, match):
-		specific = re.match(self.MENTION_RE, match.group(2))
+		specific = re.match(self.MENTION_RE, match.group(3))
 		if specific:
 			nick = specific.group(3)
-			await self.db.add_point(nick)
-			await self.room.send(f"Point for @{mention(nick)} registered.", message.mid)
+			if similar(nick, message.sender.nick):
+				await self.room.send("Don't +1 yourself, thats... nasty.", message.mid)
+			else:
+				await self.db.add_point(nick)
+				await self.room.send(f"Point for @{mention(nick)} registered.", message.mid)
 		elif message.parent:
 			parent_message = await self.room.get_message(message.parent)
 			sender = parent_message.sender.nick
-			await self.db.add_point(sender)
-			await self.room.send("Point registered.", message.mid)
+			if similar(sender, message.sender.nick):
+				await self.room.send("Don't +1 yourself, that's... nasty.", message.mid)
+			else:
+				await self.db.add_point(sender)
+				await self.room.send("Point registered.", message.mid)
 		else:
 			await self.room.send("You can't +1 nothing...", message.mid)
-	
-	async def trigger_plusone_mention(self, message, match):
-		nick = match.group(2)
-		await self.db.add_point(nick)
-		await self.room.send(f"Point for @{mention(nick)} registered.", message.mid)
 	
 	async def command_points(self, message, argstr):
 		args = self.parse_args(argstr)
