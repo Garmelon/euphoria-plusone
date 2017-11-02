@@ -1,0 +1,2 @@
+- mention (without @) or otherwise make clear who which point goes to
+- add command to display people with most points (top 10 or so)
