@@ -1,6 +1,7 @@
 import yaboli
 from yaboli.utils import *
 import asyncio
+import random
 import re
 import sys
 
@@ -80,7 +81,15 @@ class PlusOne(yaboli.Bot):
 		if nick is None:
 			await self.room.send("You can't +1 nothing...", message.mid)
 		elif similar(nick, message.sender.nick):
-			await self.room.send("Don't +1 yourself, that's... It just doesn't work that way, alright?", message.mid)
+			newtext = random.choice([
+				"Don't +1 yourself, that's... nasty.",
+				"Don't +1 yourself, that's... It just doesn't work that way, alright?",
+				"No points for " + nick + "!",
+				"No", # Attempt to trigger @Elements
+				"Would you kindly stop that?",
+				"Where'd you get that idea from? It would never work."
+			])
+			await self.room.send(newtext, message.mid)
 		else:
 			await self.db.add_point(nick)
 			await self.room.send(f"Point for user {mention(nick)} registered.", message.mid)
