@@ -80,7 +80,7 @@ class PlusOne(yaboli.Bot):
 		if nick is None:
 			await self.room.send("You can't +1 nothing...", message.mid)
 		elif similar(nick, message.sender.nick):
-			await self.room.send("Don't +1 yourself, that's... nasty.", message.mid)
+			await self.room.send("Don't +1 yourself, that's... It just doesn't work that way, alright?", message.mid)
 		else:
 			await self.db.add_point(nick)
 			await self.room.send(f"Point for user {mention(nick)} registered.", message.mid)
