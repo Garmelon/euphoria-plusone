@@ -123,7 +123,7 @@ class PlusOne(yaboli.Bot):
 			await room.send(f"Point for user {mention(nick)} registered.", message.mid)
 
 def main():
-	bot = PlusOne("PlusOne")
+	bot = PlusOne("PlusOne", "plusone.cookie")
 	join_rooms.join_rooms(bot)
 	asyncio.get_event_loop().run_forever()
 
