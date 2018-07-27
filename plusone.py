@@ -3,10 +3,9 @@ import re
 
 import yaboli
 from yaboli.utils import *
-import database
+from join_rooms import join_rooms # List of rooms kept in separate file, which is .gitignore'd
 
-# List of rooms kept in separate file, which is .gitignore'd
-import join_rooms
+import database
 
 
 class PointDB(database.Database):
@@ -67,10 +66,10 @@ class PlusOne(yaboli.Bot):
 			"\n"
 			"Created by @Garmy using https://github.com/Garmelon/yaboli.\n"
 		)
-		await self.botrulez_ping_general(room, message, ping_text=ping_text)
-		await self.botrulez_ping_specific(room, message, ping_text=ping_text)
-		await self.botrulez_help_general(room, message, help_text=short_help)
-		await self.botrulez_help_specific(room, message, help_text=long_help)
+		await self.botrulez_ping_general(room, message, text=ping_text)
+		await self.botrulez_ping_specific(room, message, text=ping_text)
+		await self.botrulez_help_general(room, message, text=short_help)
+		await self.botrulez_help_specific(room, message, text=long_help)
 		await self.botrulez_uptime(room, message)
 		await self.botrulez_kill(room, message)
 		await self.botrulez_restart(room, message)
@@ -124,7 +123,7 @@ class PlusOne(yaboli.Bot):
 
 def main():
 	bot = PlusOne("PlusOne", "plusone.cookie")
-	join_rooms.join_rooms(bot)
+	join_rooms(bot)
 	asyncio.get_event_loop().run_forever()
 
 if __name__ == "__main__":
