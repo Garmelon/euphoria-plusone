@@ -44,7 +44,7 @@ class PointDB(database.Database):
 
 
 PLUSONE_RE = r"(\+1|:\+1:|:bronze(!\?|\?!)?:)\s*(.*)"
-MENTION_RE = r"((for|to)\s+)?@(\S+)"
+MENTION_RE = r"((for|to)\s+|@)(\S+)"
 
 class PlusOne(yaboli.Bot):
 	"""
@@ -108,6 +108,8 @@ class PlusOne(yaboli.Bot):
 
 		if specific:
 			nick = specific.group(3)
+			if nick[0] == "@":
+				nick = nick[1:]
 		elif message.parent:
 			parent_message = await room.get_message(message.parent)
 			nick = parent_message.sender.nick
