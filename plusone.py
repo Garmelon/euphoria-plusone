@@ -56,11 +56,11 @@ class PlusOne(yaboli.Bot):
 	Count +1s awarded to users by other users.
 	"""
 
-	async def created(self, room):
+	async def on_created(self, room):
 		room.pointsdb = PointDB(f"points-{room.roomname}.db")
 		await room.pointsdb.initialize()
 
-	async def send(self, room, message):
+	async def on_send(self, room, message):
 		ping_text = ":bronze!?:"
 		short_help = "/me counts :+1:s"
 		long_help = (
@@ -83,8 +83,6 @@ class PlusOne(yaboli.Bot):
 		await self.command_points(room, message)
 
 		await self.trigger_plusone(room, message)
-
-	forward = send
 
 	@yaboli.command("points", specific=False, args=True)
 	async def command_points(self, room, message, argstr):
