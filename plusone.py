@@ -6,46 +6,38 @@ import yaboli
 from yaboli.utils import *
 from join_rooms import join_rooms # List of rooms kept in separate file, which is .gitignore'd
 
-import database
-
 # Turn all debugging on
 asyncio.get_event_loop().set_debug(True)
 logging.getLogger("asyncio").setLevel(logging.INFO)
 logging.getLogger("yaboli").setLevel(logging.DEBUG)
 
 
-class PointDB(database.Database):
-	@database.Database.operation
-	def initialize(conn):
-		cur = conn.cursor()
-		cur.execute((
-			"CREATE TABLE IF NOT EXISTS Points ("
-				"nick TEXT UNIQUE NOT NULL,"
-				"points INTEGER"
+class PointDB(yaboli.Database):
+	def initialize(self, db): # called automatically
+		db.execute((
+			"CREATE TABLE IF NOT EXISTS Points ( "
+				"nick TEXT UNIQUE NOT NULL, "
+				"points INTEGER "
 			")"
 		))
-		conn.commit()
+		db.commit()
 
-	@database.Database.operation
-	def add_point(conn, nick):
+	@yaboli.operation
+	def add_point(db, nick):
 		nick = mention_reduced(nick)
-		cur = conn.cursor()
 
+		cur = db.cursor()
 		cur.execute("INSERT OR IGNORE INTO Points (nick, points) VALUES (?, 0)", (nick,))
 		cur.execute("UPDATE Points SET points=points+1 WHERE nick=?", (nick,))
-		conn.commit()
+		db.commit()
 
-	@database.Database.operation
-	def points_of(conn, nick):
+	@yaboli.operation
+	def points_of(db, nick):
 		nick = mention_reduced(nick)
-		cur = conn.cursor()
 
-		cur.execute("SELECT points FROM Points WHERE nick=?", (nick,))
+		cur = db.execute("SELECT points FROM Points WHERE nick=?", (nick,))
 		res = cur.fetchone()
-		if res is not None:
-			return res[0]
-		else:
-			return 0
+		return res[0] if res is not None else 0
 
 
 PLUSONE_RE = r"(\+1|:\+1:|:bronze(!\?|\?!)?:)\s*(.*)"
@@ -57,8 +49,7 @@ class PlusOne(yaboli.Bot):
 	"""
 
 	async def on_created(self, room):
-		room.pointsdb = PointDB(f"points-{room.roomname}.db")
-		await room.pointsdb.initialize()
+		room.pointdb = PointDB(f"points-{room.roomname}.db")
 
 	async def on_send(self, room, message):
 		ping_text = ":bronze!?:"
@@ -88,7 +79,7 @@ class PlusOne(yaboli.Bot):
 	async def command_points(self, room, message, argstr):
 		args = self.parse_args(argstr)
 		if not args:
-			points = await room.pointsdb.points_of(message.sender.nick)
+			points = await room.pointdb.points_of(message.sender.nick)
 			await room.send(
 				f"You have {points} point{'s' if points != 1 else ''}.",
 				message.mid
@@ -100,7 +91,7 @@ class PlusOne(yaboli.Bot):
 					nick = arg[1:]
 				else:
 					nick = arg
-				points = await room.pointsdb.points_of(nick)
+				points = await room.pointdb.points_of(nick)
 				response.append(f"{mention(nick)} has {points} point{'' if points == 1 else 's'}.")
 			await room.send("\n".join(response), message.mid)
 
@@ -122,7 +113,7 @@ class PlusOne(yaboli.Bot):
 		elif similar(nick, message.sender.nick):
 			await room.send("Don't +1 yourself, that's not how things work.", message.mid)
 		else:
-			await room.pointsdb.add_point(nick)
+			await room.pointdb.add_point(nick)
 			await room.send(f"Point for user {mention(nick)} registered.", message.mid)
 
 def main():
