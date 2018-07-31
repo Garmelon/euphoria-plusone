@@ -8,8 +8,9 @@ from join_rooms import join_rooms # List of rooms kept in separate file, which i
 
 # Turn all debugging on
 asyncio.get_event_loop().set_debug(True)
-logging.getLogger("asyncio").setLevel(logging.INFO)
-logging.getLogger("yaboli").setLevel(logging.DEBUG)
+#logging.getLogger("asyncio").setLevel(logging.INFO)
+#logging.getLogger("yaboli").setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class PointDB(yaboli.Database):
