@@ -24,8 +24,8 @@ class PointDB(yaboli.Database):
 		db.commit()
 
 	@yaboli.operation
-	def add_point(db, nick):
-		nick = mention_reduced(nick)
+	def add_point(self, db, nick):
+		nick = normalize(nick)
 
 		cur = db.cursor()
 		cur.execute("INSERT OR IGNORE INTO Points (nick, points) VALUES (?, 0)", (nick,))
@@ -33,8 +33,8 @@ class PointDB(yaboli.Database):
 		db.commit()
 
 	@yaboli.operation
-	def points_of(db, nick):
-		nick = mention_reduced(nick)
+	def points_of(self, db, nick):
+		nick = normalize(nick)
 
 		cur = db.execute("SELECT points FROM Points WHERE nick=?", (nick,))
 		res = cur.fetchone()
