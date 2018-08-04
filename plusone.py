@@ -50,7 +50,7 @@ class PlusOne(yaboli.Bot):
 	Count +1s awarded to users by other users.
 	"""
 
-	PING_TEXT = ":bronze!?"
+	PING_TEXT = ":bronze!?:"
 	SHORT_HELP = "/me counts :+1:s"
 	LONG_HELP = (
 		"Counts +1/:+1:/:bronze:s: Simply reply \"+1\" to someone's message to award them a point.\n"
