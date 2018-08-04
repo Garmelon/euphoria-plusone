@@ -1,6 +1,6 @@
 **/__pycache__
 yaboli
 websockets
-join_rooms.py
 *.cookie
+*.conf
 *.db

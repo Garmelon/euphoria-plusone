@@ -1,10 +1,11 @@
 import asyncio
+import configparser
 import logging
 import re
 
 import yaboli
 from yaboli.utils import *
-from join_rooms import join_rooms # List of rooms kept in separate file, which is .gitignore'd
+
 
 # Turn all debugging on
 asyncio.get_event_loop().set_debug(True)
@@ -49,34 +50,42 @@ class PlusOne(yaboli.Bot):
 	Count +1s awarded to users by other users.
 	"""
 
+	PING_TEXT = ":bronze!?"
+	SHORT_HELP = "/me counts :+1:s"
+	LONG_HELP = (
+		"Counts +1/:+1:/:bronze:s: Simply reply \"+1\" to someone's message to award them a point.\n"
+		"Alternatively, specify a person with: \"+1 [to|for] @person\"\n"
+		"\n"
+		"!points - show your own points\n"
+		"!points <person1> [<person2> ...] - list other people's points\n"
+		"\n"
+		"Created by @Garmy using https://github.com/Garmelon/yaboli.\n"
+	)
+
 	async def on_created(self, room):
 		room.pointdb = PointDB(f"points-{room.roomname}.db")
 
+	async def on_command_specific(self, room, message, command, nick, argstr):
+		if similar(nick, room.session.nick) and not argstr:
+			await self.botrulez_ping(room, message, command, text=self.PING_TEXT)
+			await self.botrulez_help(room, message, command, text=self.LONG_HELP)
+			await self.botrulez_uptime(room, message, command)
+			await self.botrulez_kill(room, message, command)
+			await self.botrulez_restart(room, message, command)
+
+
+	async def on_command_general(self, room, message, command, argstr):
+		if not argstr:
+			await self.botrulez_ping(room, message, command, text=self.PING_TEXT)
+			await self.botrulez_help(room, message, command, text=self.SHORT_HELP)
+
+		await self.command_points(room, message, command, argstr)
+
 	async def on_send(self, room, message):
-		ping_text = ":bronze!?:"
-		short_help = "/me counts :+1:s"
-		long_help = (
-			"Counts +1/:+1:/:bronze:s: Simply reply \"+1\" to someone's message to award them a point.\n"
-			"Alternatively, specify a person with: \"+1 [to|for] @person\"\n"
-			"\n"
-			"!points - show your own points\n"
-			"!points <person1> [<person2> ...] - list other people's points\n"
-			"\n"
-			"Created by @Garmy using https://github.com/Garmelon/yaboli.\n"
-		)
-		await self.botrulez_ping_general(room, message, text=ping_text)
-		await self.botrulez_ping_specific(room, message, text=ping_text)
-		await self.botrulez_help_general(room, message, text=short_help)
-		await self.botrulez_help_specific(room, message, text=long_help)
-		await self.botrulez_uptime(room, message)
-		await self.botrulez_kill(room, message)
-		await self.botrulez_restart(room, message)
-
-		await self.command_points(room, message)
-
+		await super().on_send(room, message)
 		await self.trigger_plusone(room, message)
 
-	@yaboli.command("points", specific=False, args=True)
+	@yaboli.command("points")
 	async def command_points(self, room, message, argstr):
 		args = self.parse_args(argstr)
 		if not args:
@@ -117,10 +126,20 @@ class PlusOne(yaboli.Bot):
 			await room.pointdb.add_point(nick)
 			await room.send(f"Point for user {mention(nick)} registered.", message.mid)
 
-def main():
-	bot = PlusOne("PlusOne", "plusone.cookie")
-	join_rooms(bot)
+def main(configfile):
+	config = configparser.ConfigParser(allow_no_value=True)
+	config.read(configfile)
+
+	nick = config.get("general", "nick")
+	cookiefile = config.get("general", "cookiefile", fallback=None)
+	bot = PlusOne(nick, cookiefile=cookiefile)
+
+	for room, password in config.items("rooms"):
+		if not password:
+			password = None
+		bot.join_room(room, password=password)
+
 	asyncio.get_event_loop().run_forever()
 
 if __name__ == "__main__":
-	main()
+	main("plusone.conf")
