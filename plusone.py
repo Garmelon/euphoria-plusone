@@ -124,7 +124,7 @@ class PlusOne(yaboli.Bot):
 			await room.send("Don't +1 yourself, that's not how things work.", message.mid)
 		else:
 			await room.pointdb.add_point(nick)
-			await room.send(f"Point for user {mention(nick)} registered.", message.mid)
+			await room.send(f"Point for user {mention(nick, ping=False)} registered.", message.mid)
 
 def main(configfile):
 	config = configparser.ConfigParser(allow_no_value=True)
