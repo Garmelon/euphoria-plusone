@@ -43,7 +43,7 @@ class PointDB(yaboli.Database):
 
 
 PLUSONE_RE = r"(\+1|:\+1:|:bronze(!\?|\?!)?:)\s*(.*)"
-MENTION_RE = r"((for|to)\s+|@)(\S+)"
+MENTION_RE = r"((to)\s+@?|@)(\S+)"
 
 class PlusOne(yaboli.Bot):
 	"""
@@ -54,7 +54,7 @@ class PlusOne(yaboli.Bot):
 	SHORT_HELP = "/me counts :+1:s"
 	LONG_HELP = (
 		"Counts +1/:+1:/:bronze:s: Simply reply \"+1\" to someone's message to award them a point.\n"
-		"Alternatively, specify a person with: \"+1 [to|for] @person\"\n"
+		"Alternatively, specify a person with: \"+1 [to] @person\"\n"
 		"\n"
 		"!points - show your own points\n"
 		"!points <person1> [<person2> ...] - list other people's points\n"
