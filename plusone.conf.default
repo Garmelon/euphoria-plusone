@@ -1,0 +1,9 @@
+[general]
+nick = PlusOne
+cookiefile = plusone.cookie
+
+[rooms]
+# Format:
+# room
+# room=password
+test
