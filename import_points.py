@@ -10,7 +10,7 @@ from plusone import PointsDB
 
 async def add_points(db, room, points):
 	for (nick, amount) in points:
-		print(f"&{room}: {mention(nick, ping=False)} + {amount}")
+		#print(f"&{room}: {mention(nick, ping=False)} + {amount}")
 		await db.add_points(room, nick, amount)
 
 def main(to_dbfile, from_dbfile, room):

@@ -38,7 +38,6 @@ class PointsDB(yaboli.Database):
 	@yaboli.operation
 	def points_of(self, db, room, nick):
 		normalized_nick = normalize(nick)
-		print(nick, normalized_nick, room)
 		res = db.execute((
 			"SELECT points FROM points "
 			"WHERE normalized_nick=? AND room=?"
