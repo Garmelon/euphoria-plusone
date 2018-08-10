@@ -58,7 +58,7 @@ class PlusOne:
 	)
 	AUTHOR = "Created by @Garmy using github.com/Garmelon/yaboli\n"
 
-	PLUSONE_RE = r"\s*(\+1|:\+1:|:bronze(!\?|\?!)?:)\s*(.*)"
+	PLUSONE_RE = r"\s*(\+1|:\+1:|:bronze(!\?|\?!)?:)\s+(.*)"
 	MENTION_RE = r"(to\s+@?|@)(\S+)"
 
 	def __init__(self, dbfile):
