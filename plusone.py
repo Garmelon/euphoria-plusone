@@ -58,7 +58,7 @@ class PlusOne:
 	)
 	AUTHOR = "Created by @Garmy using github.com/Garmelon/yaboli\n"
 
-	PLUSONE_RE = r"\s*(\+1|:\+1:|:bronze(!\?|\?!)?:)\s+(.*)"
+	PLUSONE_RE = r"\s*(\+1|:\+1:|:bronze(!\?|\?!)?:)(\s+(.*))?"
 	MENTION_RE = r"(to\s+@?|@)(\S+)"
 
 	def __init__(self, dbfile):
@@ -87,7 +87,7 @@ class PlusOne:
 
 	@yaboli.trigger(PLUSONE_RE, flags=re.IGNORECASE)
 	async def trigger_plusone(self, room, message, match):
-		specific = re.match(self.MENTION_RE, match.group(3))
+		specific = re.match(self.MENTION_RE, match.group(4))
 
 		nick = None
 		if specific:
