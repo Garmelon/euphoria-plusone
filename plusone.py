@@ -87,7 +87,11 @@ class PlusOne:
 
 	@yaboli.trigger(PLUSONE_RE, flags=re.IGNORECASE)
 	async def trigger_plusone(self, room, message, match):
-		specific = re.match(self.MENTION_RE, match.group(4))
+		rest = match.group(4)
+		if rest:
+			specific = re.match(self.MENTION_RE, match.group(4))
+		else:
+			specific = None
 
 		nick = None
 		if specific:
